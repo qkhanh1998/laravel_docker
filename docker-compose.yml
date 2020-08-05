@@ -1,0 +1,40 @@
+version: '2'
+# //phiên bản của docker-compose
+services:
+# //dịnh nghĩa các container của chúng ta ở đây
+  # //container của chúng ta
+  webserver: 
+    build: .
+    # //port của server
+    ports: 
+      - '80:80' 
+    volumes:
+      # //Map (ánh xạ) thư mục gốc của máy thực vào thư mục html của container
+      - ./:/var/www/html 
+      # // file comfig apache để cấu hình server
+      - ./apache.conf:/etc/apache2/sites-available/000-default.conf 
+    links:
+      # // Nói cho container biết là sẽ liên kết đến container db được định nghĩa bên dưới.
+      - db 
+      # //container chúng ta định nghĩa container db 
+  db: 
+    # //container chúng ta dùng image mysql:5.7 từ docker hub
+    image: mysql:5.7
+    # //ánh xạ thư mục .data/db với thư mục /var/lib/mysql của container 
+    volumes: 
+      - "./data/db:/var/lib/mysql"
+    restart: always
+    # //thiết lập thông tin để kết nói với db
+    environment: 
+      # // password của super user 
+      MYSQL_ROOT_PASSWORD: root 
+      # //name db
+      MYSQL_DATABASE: laravel_ddb 
+      # //tên user
+      MYSQL_USER: laravel 
+      # //password của user
+      MYSQL_PASSWORD: laravel 
+    ports:
+      # //port của container
+      - "3306:3306" 
+
